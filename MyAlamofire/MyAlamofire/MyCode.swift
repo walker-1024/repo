@@ -51,9 +51,9 @@ extension URL: URLConvertible {
 public class MyAlamofire {
     
     @discardableResult
-    public static func request(_ url: URLConvertible, method: HTTPMethod = .get, parameters: [String: Any]? = nil, encoding: String.Encoding = .utf8, headers: [String: String]? = nil) -> DataRequest {
+    public static func request(_ url: URLConvertible, method: HTTPMethod = .get, parameters: [String: Any]? = nil, headers: [String: String]? = nil) -> DataRequest {
         
-        return DataRequest(url, method: method, parameters: parameters, encoding: encoding, headers: headers)
+        return DataRequest(url, method: method, parameters: parameters, headers: headers)
     }
 }
 
@@ -62,15 +62,13 @@ public class DataRequest {
     var url: URLConvertible
     var method: HTTPMethod
     var parameters: [String: Any]?
-    var encoding: String.Encoding
     var headers: [String: String]?
     var request: URLRequest?
     
-    public init(_ url: URLConvertible, method: HTTPMethod = .get, parameters: [String: Any]? = nil, encoding: String.Encoding = .utf8, headers: [String: String]? = nil) {
+    public init(_ url: URLConvertible, method: HTTPMethod = .get, parameters: [String: Any]? = nil, headers: [String: String]? = nil) {
         self.url = url
         self.method = method
         self.parameters = parameters
-        self.encoding = encoding
         self.headers = headers
         
         getRequest()
@@ -97,7 +95,7 @@ public class DataRequest {
                 let dataString = parameters.compactMap({ (key, value) in
                     return "\(key)=\(value)"
                 }).joined(separator: "&")
-                request?.httpBody = dataString.data(using: encoding)
+                request?.httpBody = dataString.data(using: .utf8)
             }
         }
     }
@@ -147,7 +145,7 @@ public class DataRequest {
                 res = Response(.failure(error))
             } else {
                 // 转换为String格式
-                let str = String(data: data!, encoding: self.encoding)
+                let str = String(data: data!, encoding: .utf8)
                 res = Response(.success(str!))
             }
             completionHandler(res!)
